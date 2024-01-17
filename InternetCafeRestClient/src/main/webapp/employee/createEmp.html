@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Create Employee</title>
+<link rel="stylesheet" type="text/css" href="../css/styles.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="commonEmp.js"></script>
+<script src="../common/scripts.js"></script>
+<script>
+$(document).ready(function() {
+    $("#create-employee-form").submit(function(event) {
+        event.preventDefault();
+
+        const employeeId = $("input[name='employeeId']").val();
+        const name = $("input[name='name']").val();
+        const address = $("input[name='adress']").val();
+        const phoneNumber = $("input[name='phonenumber']").val();
+        const email = $("input[name='email']").val();
+        const hireDateInput = new Date($("input[name='hireDate']").val());
+        const hireDate = hireDateInput.toISOString();
+        const jobTitle = $("input[name='jobTitle']").val();
+
+        isUniqueEmployee(employeeId, email, function() {
+            // Unique check successful
+            createEmployee(employeeId, name, address, phoneNumber, email, hireDate, jobTitle);
+        }, function(errorMessage) {
+            // Unique check failed
+            displayResultMessage(errorMessage);
+        });
+    });
+});
+
+function createEmployee(employeeId, name, address, phoneNumber, email, hireDate, jobTitle) {
+    
+    const url = 'http://localhost:8080/InternetCafeWeb/api/employees';
+
+    const employee = {
+        employeeId: employeeId,
+        name: name,
+        adress: address,
+        phonenumber: phoneNumber,
+        email: email,
+        hireDate: hireDate,
+        jobTitle: jobTitle
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(employee)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Operation successful
+        displayResultMessage('Successfully created employee');
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+        displayResultMessage('Failed to create employee, try again');
+    });
+}
+
+fetch('../common/header.html')
+.then(response => response.text())
+.then(data => {
+    // Replace relative paths in the fetched HTML with the correct paths
+    let correctedHtml = data.replace('img/homeClientMindre.png', '../img/homeClientMindre.png');
+    correctedHtml = correctedHtml.replace('img/InternetCafeloggaClient.png', '../img/InternetCafeloggaClient.png');
+
+    document.getElementById('header').innerHTML = correctedHtml;
+});
+
+fetch('../common/footer.html')
+.then(response => response.text())
+.then(data => {
+    document.getElementById('footer').innerHTML = data;
+    fetchWeatherData();
+});
+
+</script>
+</head>
+<body class="crud-body">
+	<div id="header"></div>
+	<div class="content-container">
+		<h2>Create Employee</h2>
+		<form id="create-employee-form">
+			<input class="input-field" type="text" name="employeeId"
+				placeholder="Employee ID:" required> 
+			<input class="input-field" type="text" name="name" placeholder="Name:"
+				required> 
+			<input class="input-field" type="text" name="adress" placeholder="Address:"
+				required> 
+			<input class="input-field" type="text" name="phonenumber"
+				placeholder="Phone Number:" required> 
+			<input class="input-field" type="email" name="email" placeholder="Email:"
+				required> 
+			<input class="input-field" type="text" name="jobTitle"
+				placeholder="Job Title:" required>
+				<input class="input-field date-input-field"
+				type="datetime-local" name="hireDate" required>
+			<button type="submit" class="submit-button">Create Employee</button>
+		</form>
+	</div>
+	<div id="footer"></div>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Update Computer</title>
+<link rel="stylesheet" type="text/css" href="../css/styles.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="commonPC.js"></script>
+<script src="../common/scripts.js"></script>
+<script>
+let currentComputer = null;
+
+$(document).ready(function() {
+    const computerList = $("#computer-list");
+
+    fetch('http://localhost:8080/InternetCafeWeb/api/computers', {
+        method: 'GET'
+    })
+    .then(response => response.json())
+    .then(computers => {
+        // Save computers to a variable
+        window.computers = computers;
+        displayComputers(computers, computerList);
+    });
+
+    // Filter computer list based on input
+    $("input[name='computerId']").on("input", function() {
+        const computerId = $(this).val().toLowerCase();
+        const filteredComputers = window.computers.filter(computer => computer.computerId.toLowerCase().startsWith(computerId));
+        displayComputers(filteredComputers, computerList);
+    });
+
+    $("input[name='computerId']").on("input", function() {
+        const computerId = $(this).val();
+        if (computerId === "") {
+            currentComputer = null;
+        } else {
+            fetchComputerById(computerId)
+                .then((computer) => {
+                    currentComputer = computer;
+                })
+                .catch((error) => {
+                    console.error("Error fetching computer:", error);
+                });
+        }
+    });
+
+    $("#update-computer-form").submit(function(event) {
+        event.preventDefault();
+        const computerId = $("input[name='computerId']").val();
+        const cpu = $("input[name='cpu']").val();
+        const gpu = $("input[name='gpu']").val();
+        const ram = $("input[name='ram']").val() ? $("input[name='ram']").val() : -1;
+        const dataStorage = $("input[name='dataStorage']").val();
+
+        if (currentComputer) {
+            updateComputer(
+                computerId,
+                cpu,
+                gpu,
+                ram,
+                dataStorage
+            );
+        } else {
+            displayResultMessage("There is no computer with the specified ID, try again");
+        }
+    });
+});
+
+function updateComputer(computerId, cpu, gpu, ram, dataStorage) {
+    const url = `http://localhost:8080/InternetCafeWeb/api/computers/${computerId}`;
+
+    const updatedComputer = {
+        computerId: computerId,
+        cpu: cpu,
+        gpu: gpu,
+        ram: ram === "" ? -1 : ram, // if ram is an empty string, set it to -1
+        dataStorage: dataStorage,
+    };
+
+    fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedComputer)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        displayResultMessage('Successfully updated computer');
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+        displayResultMessage('Failed to update computer, try again');
+    });
+}
+
+function fetchComputerById(computerId) {
+    const url = `http://localhost:8080/InternetCafeWeb/api/computers/${computerId}`;
+    return fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+}
+
+fetch('../common/header.html')
+.then(response => response.text())
+.then(data => {
+    // Replace relative paths in the fetched HTML with the correct paths
+    let correctedHtml = data.replace('img/homeClientMindre.png', '../img/homeClientMindre.png');
+    correctedHtml = correctedHtml.replace('img/InternetCafeloggaClient.png', '../img/InternetCafeloggaClient.png');
+
+    document.getElementById('header').innerHTML = correctedHtml;
+});
+
+
+fetch('../common/footer.html')
+.then(response => response.text())
+.then(data => {
+    document.getElementById('footer').innerHTML = data;
+    fetchWeatherData();
+});
+
+</script>
+</head>
+<body class="crud-body">
+	<div id="header"></div>
+	<div class="content-container">
+		<h2>Update Computer</h2>
+		<ul id="computer-list"></ul>
+		<form id="update-computer-form">
+			<input class="input-field" type="text" name="computerId"
+				placeholder="Computer ID of the computer you wish to update:" required> <input
+				class="input-field" type="text" name="cpu" placeholder="CPU:">
+			<input class="input-field" type="text" name="gpu" placeholder="GPU:">
+			<input class="input-field" type="number" name="ram"
+				placeholder="RAM:"> <input class="input-field" type="text"
+				name="dataStorage" placeholder="Data storage:">
+			<button type="submit" class="submit-button">Update Computer</button>
+		</form>
+	</div>
+	<div id="footer"></div>
+</body>
+</html>
+

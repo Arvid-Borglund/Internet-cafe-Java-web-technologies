@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Create Reservation</title>
+<link rel="stylesheet" type="text/css" href="../css/styles.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="commonRes.js"></script>
+<script src="../common/scripts.js"></script>
+<script>
+$(document).ready(function() {
+    const fetchEntity = (entity) => {
+        const url = `http://localhost:8080/InternetCafeWeb/api/${entity}`;
+        return fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .catch(error => {
+                console.error(`There was a problem with the fetch operation:`, error);
+            });
+    };
+
+    fetchEntity('computers').then(data => {
+        data.forEach(item => {
+            $(`#computerId-list`).append(new Option(item.computerId + ' (Reserved today: ' + item.reserved + ')', item.computerId));
+        });
+    });
+
+    fetchEntity('customers').then(data => {
+        data.forEach(item => {
+            $(`#customerId-list`).append(new Option(item.customerId + ' (Name: ' + item.name + ')', item.customerId));
+        });
+    });
+
+    fetchEntity('employees').then(data => {
+        data.forEach(item => {
+            $(`#employeeId-list`).append(new Option(item.employeeId + ' (Name: ' + item.name + ')', item.employeeId));
+        });
+    });
+
+    $("#create-res-form").submit(function(event) {
+        event.preventDefault();
+
+        const computerId = $("input[name='computerId']").val();
+        const customerId = $("input[name='customerId']").val();
+        const employeeId = $("input[name='employeeId']").val();
+        const timeDateInput = new Date($("input[name='timeDate']").val());
+        const timeDate = timeDateInput.toISOString();
+
+        // Check if the reservation is unique before creating
+        isUniqueReservation(computerId, timeDate,
+            () => createReservation(computerId, customerId, employeeId, timeDate),
+            (message) => displayResultMessage(message)
+        );
+    });
+});
+
+
+function createReservation(computerId, customerId, employeeId, timeDate) {
+    const url = 'http://localhost:8080/InternetCafeWeb/api/reservations';
+
+    const reservation = {
+        computerId: computerId,
+        customerId: customerId,
+        employeeId: employeeId,
+        timeDate: timeDate
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(reservation)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        displayResultMessage('Successfully created reservation');
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+        displayResultMessage('Failed to create reservation, try again');
+    });
+}
+
+fetch('../common/header.html')
+.then(response => response.text())
+.then(data => {
+    // Replace relative paths in the fetched HTML with the correct paths
+    let correctedHtml = data.replace('img/homeClientMindre.png', '../img/homeClientMindre.png');
+    correctedHtml = correctedHtml.replace('img/InternetCafeloggaClient.png', '../img/InternetCafeloggaClient.png');
+
+    document.getElementById('header').innerHTML = correctedHtml;
+});
+
+
+fetch('../common/footer.html')
+.then(response => response.text())
+.then(data => {
+    document.getElementById('footer').innerHTML = data;
+    fetchWeatherData();
+});
+
+
+</script>
+</head>
+<body class="crud-body">
+	<div id="header"></div>
+	<div class="content-container">
+		<h2>Create Reservation</h2>
+		<form id="create-res-form">
+			<input class="input-field" list="computerId-list" name="computerId"
+				placeholder="Computer ID:" required>
+			<datalist id="computerId-list"></datalist>
+			<input class="input-field" list="customerId-list" name="customerId"
+				placeholder="Customer ID:" required>
+			<datalist id="customerId-list"></datalist>
+			<input class="input-field" list="employeeId-list" name="employeeId"
+				placeholder="Employee ID:" required>
+			<datalist id="employeeId-list"></datalist>
+			<input class="input-field date-input-field" type="datetime-local" name="timeDate" required>
+
+			<button type="submit" class="submit-button">Create
+				Reservation</button>
+		</form>
+	</div>
+	<div id="footer"></div>
+</body>
+</html>
+

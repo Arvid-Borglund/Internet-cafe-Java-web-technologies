@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Read Employee</title>
+<link rel="stylesheet" type="text/css" href="../css/styles.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="commonEmp.js"></script>
+<script src="../common/scripts.js"></script>
+<script>
+$(document).ready(function() {
+    const employeeList = $("#employee-list");
+
+    fetch('http://localhost:8080/InternetCafeWeb/api/employees', {
+        method: 'GET'
+    })
+    .then(response => response.json())
+    .then(employees => {
+        // Save employees to a variable
+        window.employees = employees;
+        displayEmployees(employees, employeeList);
+    });
+
+    // Filter employee list based on input
+    $("#employee-id").on("input", function() {
+        const employeeId = $(this).val().toLowerCase();
+        const filteredEmployees = window.employees.filter(employee => employee.employeeId.toLowerCase().startsWith(employeeId));
+        displayEmployees(filteredEmployees, employeeList);
+    });
+});
+
+fetch('../common/header.html')
+.then(response => response.text())
+.then(data => {
+    // Replace relative paths in the fetched HTML with the correct paths
+    let correctedHtml = data.replace('img/homeClientMindre.png', '../img/homeClientMindre.png');
+    correctedHtml = correctedHtml.replace('img/InternetCafeloggaClient.png', '../img/InternetCafeloggaClient.png');
+
+    document.getElementById('header').innerHTML = correctedHtml;
+});
+
+fetch('../common/footer.html')
+.then(response => response.text())
+.then(data => {
+    document.getElementById('footer').innerHTML = data;
+    fetchWeatherData();
+});
+
+</script>
+</head>
+<body class="crud-body">
+	<div id="header"></div>
+	<div class="content-container">
+		<h2>Read Employee</h2>
+		<ul id="employee-list"></ul>
+		<input class="input-field" type="text" id="employee-id"
+			placeholder="Employee ID of the employee you want to view:"> <br>
+	</div>
+	<div id="footer"></div>
+</body>
+</html>

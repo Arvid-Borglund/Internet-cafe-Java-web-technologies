@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Create Computer</title>
+<link rel="stylesheet" type="text/css" href="../css/styles.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="commonPC.js"></script>
+<script src="../common/scripts.js"></script>
+<style>
+ul {
+	list-style-type: none;
+}
+</style>
+<script>
+
+$(document).ready(function() {
+    $("#create-pc-form").submit(function(event) {
+        event.preventDefault();
+
+        const computerId = $("input[name='computerId']").val();
+        const cpu = $("input[name='cpu']").val();
+        const gpu = $("input[name='gpu']").val();
+        const ram = parseInt($("input[name='ram']").val());
+        const dataStorage = $("input[name='dataStorage']").val();
+        const reserved = false;
+
+        isUniqueComputer(computerId, function() {
+            // Unique check successful
+            createComputer(computerId, cpu, gpu, ram, dataStorage, reserved);
+        }, function(errorMessage) {
+            // Unique check failed
+            displayResultMessage(errorMessage);
+        });
+    });
+});
+
+function createComputer(computerId, cpu, gpu, ram, dataStorage, reserved) {
+  
+    const url = 'http://localhost:8080/InternetCafeWeb/api/computers';
+    
+    const computer = {
+        computerId: computerId,
+        cpu: cpu,
+        gpu: gpu,
+        ram: ram,
+        dataStorage: dataStorage,
+        reserved: reserved
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(computer)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Operation successful
+        displayResultMessage('Successfully created computer');
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+        displayResultMessage('Failed to create computer, try again');
+    });
+}
+
+fetch('../common/header.html')
+.then(response => response.text())
+.then(data => {
+    // Replace relative paths in the fetched HTML with the correct paths
+    let correctedHtml = data.replace('img/homeClientMindre.png', '../img/homeClientMindre.png');
+    correctedHtml = correctedHtml.replace('img/InternetCafeloggaClient.png', '../img/InternetCafeloggaClient.png');
+
+    document.getElementById('header').innerHTML = correctedHtml;
+});
+
+
+fetch('../common/footer.html')
+.then(response => response.text())
+.then(data => {
+    document.getElementById('footer').innerHTML = data;
+    fetchWeatherData();
+});
+
+</script>
+</head>
+<body class="crud-body">
+	<div id="header"></div>
+	<div class="content-container">
+		<h2>Create Computer</h2>
+		<form id="create-pc-form">
+			<input class="input-field" type="text" name="computerId"
+				placeholder="Computer ID:" required> <input
+				class="input-field" type="text" name="cpu" placeholder="CPU:"
+				required> <input class="input-field" type="text" name="gpu"
+				placeholder="GPU:" required> <input class="input-field"
+				type="number" name="ram" placeholder="RAM:" required> <input
+				class="input-field" type="text" name="dataStorage"
+				placeholder="Data storage:" required>
+			<button type="submit" class="submit-button">Create Computer</button>
+		</form>
+	</div>
+	<div id="footer"></div>
+</body>
+</html>

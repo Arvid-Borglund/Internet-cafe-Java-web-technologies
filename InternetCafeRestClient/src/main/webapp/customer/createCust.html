@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Create Customer</title>
+<link rel="stylesheet" type="text/css" href="../css/styles.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="commonCust.js"></script>
+<script src="../common/scripts.js"></script>
+<script>
+$(document).ready(function() {
+    $("#create-customer-form").submit(function(event) {
+        event.preventDefault();
+
+        const customerId = $("input[name='customerId']").val();
+        const name = $("input[name='name']").val();
+        const adress = $("input[name='adress']").val();
+        const phonenumber = $("input[name='phonenumber']").val();
+        const email = $("input[name='email']").val();
+        const loyaltyLevel = $("input[name='loyaltyLevel']").val();
+
+        isUniqueCustomer(customerId, email, function() {
+            // Unique check successful
+            createCustomer(customerId, name, adress, phonenumber, email, loyaltyLevel);
+        }, function(errorMessage) {
+            // Unique check failed
+            displayResultMessage(errorMessage);
+        });
+    });
+});
+
+function createCustomer(customerId, name, adress, phonenumber, email, loyaltyLevel) {
+    
+    const url = 'http://localhost:8080/InternetCafeWeb/api/customers';
+
+    const customer = {
+        customerId: customerId,
+        name: name,
+        adress: adress,
+        phonenumber: phonenumber,
+        email: email,
+        loyaltyLevel: loyaltyLevel
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(customer)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Operation successful
+        displayResultMessage('Successfully created customer');
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+        displayResultMessage('Failed to create customer, try again');
+    });
+}
+
+fetch('../common/header.html')
+.then(response => response.text())
+.then(data => {
+    // Replace relative paths in the fetched HTML with the correct paths
+    let correctedHtml = data.replace('img/homeClientMindre.png', '../img/homeClientMindre.png');
+    correctedHtml = correctedHtml.replace('img/InternetCafeloggaClient.png', '../img/InternetCafeloggaClient.png');
+
+    document.getElementById('header').innerHTML = correctedHtml;
+});
+
+
+fetch('../common/footer.html')
+.then(response => response.text())
+.then(data => {
+    document.getElementById('footer').innerHTML = data;
+    fetchWeatherData();
+});
+
+</script>
+</head>
+<body class="crud-body">
+	<div id="header"></div>
+	<div class="content-container">
+		<h2>Create Customer</h2>
+		<form id="create-customer-form">
+			<input class="input-field" type="text" name="customerId"
+				placeholder="Customer ID:" required> <input
+				class="input-field" type="text" name="name" placeholder="Name:"
+				required> <input class="input-field" type="text"
+				name="adress" placeholder="Address:" required> <input
+				class="input-field" type="text" name="phonenumber"
+				placeholder="Phone Number:" required> <input
+				class="input-field" type="email" name="email" placeholder="Email:"
+				required> <input type="hidden" name="loyaltyLevel" value="0">
+			<button type="submit" class="submit-button">Create Customer</button>
+		</form>
+	</div>
+	<div id="footer"></div>
+</body>
+</html>
+

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Delete Customer</title>
+<link rel="stylesheet" type="text/css" href="../css/styles.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="commonCust.js"></script>
+<script src="../common/scripts.js"></script>
+<style>
+ul {
+	list-style-type: none;
+}
+</style>
+<script>
+$(document).ready(function() {
+    $("#delete-customer-form").submit(function(event) {
+        event.preventDefault();
+        onDeleteButtonClick();
+    });
+});
+
+function onDeleteButtonClick() {
+    const customerId = $("#customer-id").val();
+    if (customerId) {
+        isUniqueCustomer(customerId, "", function() {
+            // Customer does not exist
+            displayResultMessage('There is no customer with the specified ID, try again');
+        }, function() {
+            // Customer exists
+            deleteCustomer(customerId);
+        });
+    } else {
+        alert('Please enter a valid customer ID');
+    }
+}
+
+function deleteCustomer(customerId) {
+    const url = `http://localhost:8080/InternetCafeWeb/api/customers/${customerId}`;
+
+    fetch(url, {
+        method: 'DELETE'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        displayResultMessage('Successfully deleted customer');
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+        displayResultMessage('Failed to delete customer, try again');
+    });
+}
+
+fetch('../common/header.html')
+.then(response => response.text())
+.then(data => {
+    // Replace relative paths in the fetched HTML with the correct paths
+    let correctedHtml = data.replace('img/homeClientMindre.png', '../img/homeClientMindre.png');
+    correctedHtml = correctedHtml.replace('img/InternetCafeloggaClient.png', '../img/InternetCafeloggaClient.png');
+
+    document.getElementById('header').innerHTML = correctedHtml;
+});
+
+fetch('../common/footer.html')
+.then(response => response.text())
+.then(data => {
+    document.getElementById('footer').innerHTML = data;
+    fetchWeatherData();
+});
+
+$(document).ready(function() {
+    ready(function(customers, customerList) {
+        $("#customer-id").on("input", function() {
+            const customerId = $(this).val().toLowerCase();
+            const filteredCustomers = customers.filter(customer => customer.customerId.toLowerCase().startsWith(customerId));
+            displayCustomers(filteredCustomers, customerList);
+        });
+    });
+});
+</script>
+</head>
+<body class="crud-body">
+	<div id="header"></div>
+	<div class="content-container">
+		<h2>Delete Customer</h2>
+		<ul id="customer-list"></ul>
+		<form id="delete-customer-form">
+			<input class="input-field" type="text" id="customer-id"
+				placeholder="Customer ID:" required>
+			<button type="submit" class="submit-button">Delete Customer</button>
+		</form>
+		
+	</div>
+	<div id="footer"></div>
+</body>
+</html>

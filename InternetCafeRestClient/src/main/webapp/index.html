@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Index</title>
+<link rel="stylesheet" href="css/styles.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="common/scripts.js"></script>
+<script>
+  let selectedColumn1Button = null;
+  let selectedColumn2Button = null;
+
+  function handleButtonClick(column, button) {
+    if (column === 1) {
+      if (selectedColumn1Button) {
+        selectedColumn1Button.classList.remove('selected');
+      }
+      selectedColumn1Button = button;
+    } else {
+      if (selectedColumn2Button) {
+        selectedColumn2Button.classList.remove('selected');
+      }
+      selectedColumn2Button = button;
+    }
+
+    button.classList.add('selected');
+    checkSelections();
+  }
+
+  function checkSelections() {
+    if (selectedColumn1Button && selectedColumn2Button) {
+      if (selectedColumn1Button.textContent === 'Create' && selectedColumn2Button.textContent === 'Employee') {
+    	  resetSelections();
+        window.location.href = 'employee/createEmp.html';
+      }
+      if (selectedColumn1Button.textContent === 'Read' && selectedColumn2Button.textContent === 'Employee') {
+    	  resetSelections();
+          window.location.href = 'employee/readEmp.html';
+        }
+      if (selectedColumn1Button.textContent === 'Delete' && selectedColumn2Button.textContent === 'Employee') {
+    	  resetSelections();
+          window.location.href = 'employee/deleteEmp.html';
+        }
+      if (selectedColumn1Button.textContent === 'Update' && selectedColumn2Button.textContent === 'Employee') {
+    	  resetSelections();
+          window.location.href = 'employee/updateEmp.html';
+        }
+      if (selectedColumn1Button.textContent === 'Create' && selectedColumn2Button.textContent === 'Customer') {
+    	  resetSelections();
+          window.location.href = 'customer/createCust.html';
+        }
+      if (selectedColumn1Button.textContent === 'Read' && selectedColumn2Button.textContent === 'Customer') {
+    	  resetSelections();
+          window.location.href = 'customer/readCust.html';
+        }
+      if (selectedColumn1Button.textContent === 'Update' && selectedColumn2Button.textContent === 'Customer') {
+    	  resetSelections();
+          window.location.href = 'customer/updateCust.html';
+        }
+      if (selectedColumn1Button.textContent === 'Delete' && selectedColumn2Button.textContent === 'Customer') {
+    	  resetSelections();
+          window.location.href = 'customer/deleteCust.html';
+        }
+      if (selectedColumn1Button.textContent === 'Create' && selectedColumn2Button.textContent === 'Computer') {
+    	  resetSelections();
+          window.location.href = 'computer/createPC.html';
+        }
+      if (selectedColumn1Button.textContent === 'Read' && selectedColumn2Button.textContent === 'Computer') {
+    	  resetSelections();
+          window.location.href = 'computer/readPC.html';
+        }
+      if (selectedColumn1Button.textContent === 'Update' && selectedColumn2Button.textContent === 'Computer') {
+    	  resetSelections();
+          window.location.href = 'computer/updatePC.html';
+        }
+      if (selectedColumn1Button.textContent === 'Delete' && selectedColumn2Button.textContent === 'Computer') {
+    	  resetSelections();
+          window.location.href = 'computer/deletePC.html';
+        }
+      if (selectedColumn1Button.textContent === 'Create' && selectedColumn2Button.textContent === 'Reservation') {
+    	  resetSelections();
+          window.location.href = 'reservation/createRes.html';
+        }
+      if (selectedColumn1Button.textContent === 'Read' && selectedColumn2Button.textContent === 'Reservation') {
+    	  resetSelections();
+          window.location.href = 'reservation/readRes.html';
+        }
+      if (selectedColumn1Button.textContent === 'Delete' && selectedColumn2Button.textContent === 'Reservation') {
+          alert("Can't delete reservation");
+          resetSelections();
+          return;
+        }
+        if (selectedColumn1Button.textContent === 'Update' && selectedColumn2Button.textContent === 'Reservation') {
+          alert("Can't update reservation");
+          resetSelections();
+          return;
+        }
+    }
+  }
+  
+  function resetSelections() {
+	    if (selectedColumn1Button) {
+	      selectedColumn1Button.classList.remove('selected');
+	      selectedColumn1Button = null;
+	    }
+	    if (selectedColumn2Button) {
+	      selectedColumn2Button.classList.remove('selected');
+	      selectedColumn2Button = null;
+	    }
+	  }
+  
+  fetch('common/header.html')
+  .then(response => response.text())
+  .then(data => document.getElementById('header').innerHTML = data);
+  
+  fetch('common/footer.html')
+  .then(response => response.text())
+  .then(data => {
+      document.getElementById('footer').innerHTML = data;
+      fetchWeatherData();
+  });
+  
+</script>
+</head>
+<body>
+	<div id="header"></div>
+	<div class="buttons-container">
+		<div class="column column-1">
+			<button onclick="handleButtonClick(1, this)">Create</button>
+			<button onclick="handleButtonClick(1, this)">Read</button>
+			<button onclick="handleButtonClick(1, this)">Update</button>
+			<button onclick="handleButtonClick(1, this)">Delete</button>
+		</div>
+		<div class="column column-2">
+			<button onclick="handleButtonClick(2, this)">Employee</button>
+			<button onclick="handleButtonClick(2, this)">Customer</button>
+			<button onclick="handleButtonClick(2, this)">Computer</button>
+			<button onclick="handleButtonClick(2, this)">Reservation</button>
+		</div>
+	</div>
+	<div id="content"></div>
+	<div id="footer"></div>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Update Employee</title>
+<link rel="stylesheet" type="text/css" href="../css/styles.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="commonEmp.js"></script>
+<script src="../common/scripts.js"></script>
+<script>
+let currentEmployee = null;
+
+$(document).ready(function() {
+    $("input[name='employeeId']").on("input", function() {
+        const employeeId = $(this).val();
+        if (employeeId === "") {
+            currentEmployee = null;
+        } else {
+            fetchEmployeeById(employeeId)
+                .then((employee) => {
+                    currentEmployee = employee;
+                })
+                .catch((error) => {
+                    console.error("Error fetching employee:", error);
+                });
+        }
+    });
+
+    $("#update-employee-form").submit(function(event) {
+        event.preventDefault();
+        const employeeId = $("input[name='employeeId']").val();
+        const name = $("input[name='name']").val();
+        const address = $("input[name='adress']").val();
+        const phonenumber = $("input[name='phonenumber']").val();
+        const email = $("input[name='email']").val();
+        const jobTitle = $("input[name='jobTitle']").val();
+
+        if (currentEmployee) {
+            updateEmployee(
+                employeeId,
+                name,
+                address,
+                phonenumber,
+                email,
+                jobTitle
+            );
+        } else {
+            displayResultMessage("There is no employee with the specified ID, try again");
+        }
+    });
+
+    ready(function(employees, employeeList) {
+        $("input[name='employeeId']").on("input", function() {
+            const employeeId = $(this).val().toLowerCase();
+            const filteredEmployees = employees.filter(employee => employee.employeeId.toLowerCase().startsWith(employeeId));
+            displayEmployees(filteredEmployees, employeeList);
+        });
+    });
+});
+
+fetch('../common/header.html')
+.then(response => response.text())
+.then(data => {
+    // Replace relative paths in the fetched HTML with the correct paths
+    let correctedHtml = data.replace('img/homeClientMindre.png', '../img/homeClientMindre.png');
+    correctedHtml = correctedHtml.replace('img/InternetCafeloggaClient.png', '../img/InternetCafeloggaClient.png');
+
+    document.getElementById('header').innerHTML = correctedHtml;
+});
+
+fetch('../common/footer.html')
+.then(response => response.text())
+.then(data => {
+    document.getElementById('footer').innerHTML = data;
+    fetchWeatherData();
+});
+
+function updateEmployee(employeeId, name, address, phonenumber, email, jobTitle) {
+    const url = `http://localhost:8080/InternetCafeWeb/api/employees/${employeeId}`;
+
+    const updatedEmployee = {
+        employeeId: employeeId,
+        name: name,
+        address: address,
+        phonenumber: phonenumber,
+        email: email,
+        jobTitle: jobTitle
+    };
+
+    fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedEmployee)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        displayResultMessage('Successfully updated employee');
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+        displayResultMessage('Failed to update employee, try again');
+    });
+}
+
+function fetchEmployeeById(employeeId) {
+    const url = `http://localhost:8080/InternetCafeWeb/api/employees/${employeeId}`;
+    return fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+}
+</script>
+</head>
+<body class="crud-body">
+	<div id="header"></div>
+	<div class="content-container">
+		<h2>Update Employee</h2>
+		<ul id="employee-list"></ul>
+		<form id="update-employee-form">
+			<input class="input-field" type="text" name="employeeId"
+				placeholder="Employee ID of the employee you wish to update:"
+				required> <input class="input-field" type="text" name="name"
+				placeholder="Name:"> <input class="input-field" type="text"
+				name="adress" placeholder="Address:"> <input
+				class="input-field" type="text" name="phonenumber"
+				placeholder="Phone Number:"> <input class="input-field"
+				type="email" name="email" placeholder="Email:"> <input
+				class="input-field" type="text" name="jobTitle"
+				placeholder="Job Title:">
+			<button type="submit" class="submit-button">Update Employee</button>
+		</form>
+	</div>
+	<div id="footer"></div>
+</body>
+</html>
+

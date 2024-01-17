@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Update Customer</title>
+<link rel="stylesheet" type="text/css" href="../css/styles.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="commonCust.js"></script>
+<script src="../common/scripts.js"></script>
+<script>
+let currentCustomer = null;
+
+$(document).ready(function() {
+    $("input[name='customerId']").on("input", function() {
+        const customerId = $(this).val();
+        if (customerId === "") {
+            currentCustomer = null;
+        } else {
+            fetchCustomerById(customerId)
+                .then((customer) => {
+                    currentCustomer = customer;
+                })
+                .catch((error) => {
+                    console.error("Error fetching customer:", error);
+                });
+        }
+    });
+
+    $("#update-customer-form").submit(function(event) {
+        event.preventDefault();
+        const customerId = $("input[name='customerId']").val();
+        const name = $("input[name='name']").val();
+        const adress = $("input[name='adress']").val();
+        const phonenumber = $("input[name='phonenumber']").val();
+        const email = $("input[name='email']").val();
+
+        if (currentCustomer) {
+            updateCustomer(
+                customerId,
+                name,
+                adress,
+                phonenumber,
+                email
+            );
+        } else {
+            displayResultMessage("There is no customer with the specified ID, try again");
+        }
+    });
+
+    ready(function(customers, customerList) {
+        $("input[name='customerId']").on("input", function() {
+            const customerId = $(this).val().toLowerCase();
+            const filteredCustomers = customers.filter(customer => customer.customerId.toLowerCase().startsWith(customerId));
+            displayCustomers(filteredCustomers, customerList);
+        });
+    });
+});
+
+fetch('../common/header.html')
+.then(response => response.text())
+.then(data => {
+    // Replace relative paths in the fetched HTML with the correct paths
+    let correctedHtml = data.replace('img/homeClientMindre.png', '../img/homeClientMindre.png');
+    correctedHtml = correctedHtml.replace('img/InternetCafeloggaClient.png', '../img/InternetCafeloggaClient.png');
+
+    document.getElementById('header').innerHTML = correctedHtml;
+});
+
+fetch('../common/footer.html')
+.then(response => response.text())
+.then(data => {
+    document.getElementById('footer').innerHTML = data;
+    fetchWeatherData();
+});
+
+function updateCustomer(customerId, name, adress, phonenumber, email) {
+    const url = `http://localhost:8080/InternetCafeWeb/api/customers/${customerId}`;
+
+    const updatedCustomer = {
+        customerId: customerId,
+        name: name,
+        adress: adress,
+        phonenumber: phonenumber,
+        email: email,
+    };
+
+    fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedCustomer)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        displayResultMessage('Successfully updated customer');
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+        displayResultMessage('Failed to update customer, try again');
+    });
+}
+
+function fetchCustomerById(customerId) {
+    const url = `http://localhost:8080/InternetCafeWeb/api/customers/${customerId}`;
+    return fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+}
+</script>
+</head>
+<body class="crud-body">
+	<div id="header"></div>
+	<div class="content-container">
+		<h2>Update Customer</h2>
+		<ul id="customer-list"></ul>
+		<form id="update-customer-form">
+			<input class="input-field" type="text" name="customerId"
+				placeholder="Customer ID of the customer you wish to update:"
+				required> <input class="input-field" type="text" name="name"
+				placeholder="Name:"> <input class="input-field" type="text"
+				name="adress" placeholder="Address:"> <input
+				class="input-field" type="text" name="phonenumber"
+				placeholder="Phone Number:"> <input class="input-field"
+				type="email" name="email" placeholder="Email:">
+			<button type="submit" class="submit-button">Update Customer</button>
+		</form>
+	</div>
+	<div id="footer"></div>
+</body>
+</html>
+

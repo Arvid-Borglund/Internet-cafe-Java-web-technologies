@@ -1,0 +1,256 @@
+/* Add your existing styles here, if any */
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+
+/* Header styles */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #3c5a38;
+    padding: 10px;
+    height: 35px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.header img.logo {
+    height: 35px; /* Adjust the height as needed */
+    width: auto; /* Maintain aspect ratio */
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown span {
+    color: #fff;
+    cursor: pointer;
+    font-size: 200%; /* Increase the font size */
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Footer styles */
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #3c5a38;
+    padding: 10px;
+    height: 35px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.footer-text {
+    color: #fff;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.weather-info {
+    color: #fff;
+    position: absolute;
+    right: 30px;
+}
+
+
+/* Make the body a flex container */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Set the minimum height to the full viewport height */
+}
+
+.main-content {
+    padding: 10px;
+}
+
+.main-content h1 {
+    font-size: 1.5rem; /* Adjust the font size according to your preference */
+    margin-top: 0.5rem; /* Adjust the margin above the h1 */
+    margin-bottom: 0.5rem; /* Adjust the margin below the h1 */
+}
+
+.ProjectInfo {
+    font-size: 14px; /* Adjust the font size as desired */
+    color: darkred; /* Very dark green text color */
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    line-height: 2; /* Adjust the spacing between rows */
+    max-width: 720px; /* Adjust the maximum width of the text block */
+    margin: 0 auto;
+}
+
+
+.table-container {
+  overflow-x: auto;
+  overflow-y: scroll;
+  max-height: calc(8 * 2.5rem); /* Set the fixed height to 8 rows */
+  border: 1px solid #4CAF50; /* Add green border */
+  margin-bottom: 0.5rem; /* Adjust the margin between the two table views */
+}
+
+/* Table column styles */
+table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* Cell content truncation styles */
+td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #ccc;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+/* New table view styles */
+.single-row-table-container {
+  overflow-x: auto;
+  height: 2.5rem; /* Fixed height for 1 row */
+  margin-bottom: 1px; /* Small gap between two table views */
+  border: 1px solid #4CAF50; /* Add green border */
+}
+
+.single-row-table-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.single-row-table-container th, .single-row-table-container td {
+  text-align: left;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #ccc;
+}
+
+.single-row-table-container th {
+  display: none; /* Hide the column headers for the second table view */
+}
+
+
+
+.input-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+    margin-top: 25px;
+}
+
+.input-container input {
+    flex-basis: calc(6.666% - 8px);
+    margin-bottom: 10px;
+    margin-left: 8px;
+}
+
+/* Style the checkbox differently */
+.input-container .checkbox-input {
+    flex-basis: auto;
+    margin-right: 5px;
+}
+
+.input-container .checkbox-label {
+    flex-basis: auto;
+}
+
+.buttons-container {
+    margin-right: 8px;
+}
+
+.buttons-container input[type="submit"] {
+    padding: 10px;
+    background-color: #408080;
+    color: white;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    width: 80px; /* Add a fixed width here */
+}
+
+.buttons-container input[type="submit"]:hover {
+    background-color: #80ffff;
+}
+
+
+/* New styles for the homepage */
+.homepage {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.homepage .main-content {
+  flex-grow: 1;
+}
+
+
+/* Welcome message styles */
+.welcome-message {
+  font-size: 5rem; /* Adjust the font size according to your preference */
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  text-align: center;
+}
+
+
+

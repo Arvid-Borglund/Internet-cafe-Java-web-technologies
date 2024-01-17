@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Delete Computer</title>
+<link rel="stylesheet" type="text/css" href="../css/styles.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="commonPC.js"></script>
+<script src="../common/scripts.js"></script>
+<script>
+$(document).ready(function() {
+    const computerList = $("#computer-list");
+
+    fetch('http://localhost:8080/InternetCafeWeb/api/computers', {
+        method: 'GET'
+    })
+    .then(response => response.json())
+    .then(computers => {
+        window.computers = computers;
+        displayComputers(computers, computerList);
+    });
+
+    $("#computer-id").on("input", function() {
+        const computerId = $(this).val().toLowerCase();
+        const filteredComputers = window.computers.filter(computer => computer.computerId.toLowerCase().startsWith(computerId));
+        displayComputers(filteredComputers, computerList);
+    });
+
+    $("#delete-computer-form").submit(function(event) {
+        event.preventDefault();
+        onDeleteButtonClick();
+    });
+});
+
+function onDeleteButtonClick() {
+    const computerId = $("#computer-id").val();
+    if (computerId) {
+        isUniqueComputer(computerId, function() {
+            displayResultMessage('There is no computer with the specified ID, try again');
+        }, function() {
+            fetch('http://localhost:8080/InternetCafeWeb/api/reservations', {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(reservations => {
+                const relatedReservations = reservations.filter(reservation => reservation.computer.computerId === computerId).length;
+                if (relatedReservations > 0) {
+                    alert(`This computer is currently related to ${relatedReservations} reservations in the system. The reservations associated with this computer must be deleted before this computer can be removed.`);
+                } else {
+                    deleteComputer(computerId);
+                }
+            });
+        });
+    } else {
+        alert('Please enter a valid computer ID');
+    }
+}
+
+function deleteComputer(computerId) {
+    const url = `http://localhost:8080/InternetCafeWeb/api/computers/${computerId}`;
+
+    fetch(url, {
+        method: 'DELETE'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        displayResultMessage('Successfully deleted computer');
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+        displayResultMessage('Failed to delete computer, try again');
+    });
+}
+
+
+fetch('../common/header.html')
+.then(response => response.text())
+.then(data => {
+    // Replace relative paths in the fetched HTML with the correct paths
+    let correctedHtml = data.replace('img/homeClientMindre.png', '../img/homeClientMindre.png');
+    correctedHtml = correctedHtml.replace('img/InternetCafeloggaClient.png', '../img/InternetCafeloggaClient.png');
+
+    document.getElementById('header').innerHTML = correctedHtml;
+});
+
+
+fetch('../common/footer.html')
+.then(response => response.text())
+.then(data => {
+    document.getElementById('footer').innerHTML = data;
+    fetchWeatherData();
+});
+
+</script>
+</head>
+<body class="crud-body">
+    <div id="header"></div>
+    <div class="content-container">
+        <h2>Delete Computer</h2>
+        <ul id="computer-list"></ul>
+        <form id="delete-computer-form">
+            <label>Computer ID: <input class="input-field" type="text" id="computer-id" placeholder="Computer ID:" required></label>
+            <button type="submit" class="submit-button">Delete Computer</button>
+        </form>
+    </div>
+    <div id="footer"></div>
+</body>
+</html>

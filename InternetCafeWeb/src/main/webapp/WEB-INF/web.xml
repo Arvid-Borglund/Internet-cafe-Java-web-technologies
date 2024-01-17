@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+	id="WebApp_ID" version="4.0">
+	<display-name>InternetCafeWeb</display-name>
+	<jsp-config>
+		<jsp-property-group>
+			<url-pattern>*.jsp</url-pattern>
+			<page-encoding>UTF-8</page-encoding>
+		</jsp-property-group>
+	</jsp-config>
+
+	<servlet>
+		<servlet-name>InternetCafeController</servlet-name>
+		<servlet-class>org.ics.controller.InternetCafeController</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>InternetCafeController</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.css</url-pattern>
+		<url-pattern>*.js</url-pattern>
+		<url-pattern>*.png</url-pattern>
+		<url-pattern>*.jpg</url-pattern>
+		<url-pattern>*.jpeg</url-pattern>
+		<url-pattern>*.gif</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>EmployeeApiServlet</servlet-name>
+		<servlet-class>org.ics.api.EmployeeApiServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EmployeeApiServlet</servlet-name>
+		<url-pattern>/api/employees/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>CustomerApiServlet</servlet-name>
+		<servlet-class>org.ics.api.CustomerApiServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CustomerApiServlet</servlet-name>
+		<url-pattern>/api/customers/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ComputerApiServlet</servlet-name>
+		<servlet-class>org.ics.api.ComputerApiServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ComputerApiServlet</servlet-name>
+		<url-pattern>/api/computers/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>ReservationApiServlet</servlet-name>
+		<servlet-class>org.ics.api.ReservationApiServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ReservationApiServlet</servlet-name>
+		<url-pattern>/api/reservations/*</url-pattern>
+	</servlet-mapping>
+
+
+	<filter>
+		<filter-name>CORSFilter</filter-name>
+		<filter-class>org.ics.api.CORSFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>CORSFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+
+</web-app>

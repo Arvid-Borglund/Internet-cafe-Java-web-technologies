@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Delete Employee</title>
+<link rel="stylesheet" type="text/css" href="../css/styles.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="commonEmp.js"></script>
+<script src="../common/scripts.js"></script>
+<script>
+$(document).ready(function() {
+    $("#delete-employee-form").submit(function(event) {
+        event.preventDefault();
+        onDeleteButtonClick();
+    });
+});
+
+function onDeleteButtonClick() {
+    const employeeId = $("#employee-id").val();
+    if (employeeId) {
+        isUniqueEmployee(employeeId, "", function() {
+            // Employee does not exist
+            displayResultMessage('There is no employee with the specified ID, try again');
+        }, function() {
+            // Employee exists
+            deleteEmployee(employeeId);
+        });
+    } else {
+        alert('Please enter a valid employee ID');
+    }
+}
+
+function deleteEmployee(employeeId) {
+    const url = `http://localhost:8080/InternetCafeWeb/api/employees/${employeeId}`;
+
+    fetch(url, {
+        method: 'DELETE'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        displayResultMessage('Successfully deleted employee');
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+        displayResultMessage('Failed to delete employee, try again');
+    });
+}
+
+fetch('../common/header.html')
+.then(response => response.text())
+.then(data => {
+    // Replace relative paths in the fetched HTML with the correct paths
+    let correctedHtml = data.replace('img/homeClientMindre.png', '../img/homeClientMindre.png');
+    correctedHtml = correctedHtml.replace('img/InternetCafeloggaClient.png', '../img/InternetCafeloggaClient.png');
+
+    document.getElementById('header').innerHTML = correctedHtml;
+});
+
+fetch('../common/footer.html')
+.then(response => response.text())
+.then(data => {
+    document.getElementById('footer').innerHTML = data;
+    fetchWeatherData();
+});
+
+$(document).ready(function() {
+    ready(function(employees, employeeList) {
+        $("#employee-id").on("input", function() {
+            const employeeId = $(this).val().toLowerCase();
+            const filteredEmployees = employees.filter(employee => employee.employeeId.toLowerCase().startsWith(employeeId));
+            displayEmployees(filteredEmployees, employeeList);
+        });
+    });
+});
+</script>
+</head>
+<body class="crud-body">
+	<div id="header"></div>
+	<div class="content-container">
+		<h2>Delete Employee</h2>
+		<ul id="employee-list"></ul>
+		<form id="delete-employee-form">
+			<input class="input-field" type="text" id="employee-id"
+				placeholder="Employee ID:" required>
+			<button type="submit" class="submit-button">Delete Employee</button>
+		</form>
+	</div>
+	<div id="footer"></div>
+</body>
+</html>
